@@ -1,16 +1,25 @@
+import * as actionTypes from '../actions/actionTypes';
+
 const initialState = {
-    todos: [{ _id: '5af92b89801cfc0a94e3ff4f', name: 'test' }],
+    todos: [],
     isLoading: false,
     hasError: false
 };
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'START_FETCH_TODOS':
+        case actionTypes.TODOS_REQUEST:
             return { todos: [], isLoading: true, hasError: false };
-        case 'FETCH_TODOS_SUCCESS':
+        case actionTypes.TODOS_REQUEST_SUCCESS:
             return { todos: action.todos, isLoading: false, hasError: false};
-        case 'FETCH_TODOS_ERROR':
+        case actionTypes.TODOS_REQUEST_FAILURE:
             return { todos: [], isLoading: false, hasError: true };
+        case actionTypes.TODO_CREATE_UPDATE_REQUEST:
+            return { ...state, todos: state.todos.map((item) => {
+                if (item._id === action.todo._id) {
+                    item.completed = action.todo.completed;
+                }
+                return item;
+            }) };
     }
     return state;
 };

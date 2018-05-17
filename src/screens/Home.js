@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IOSIcon from "react-native-vector-icons/Ionicons";
 
-import { startFetchTodo, fetchToDoSuccess, fetchToDoError } from '../actions/actionCreator';
+import { startFetchTodo, fetchToDoSuccess, fetchToDoError } from '../actions/actions';
+import { getTodos } from '../api/index';
+import ToDoItem from '../components/ToDoItem';
 
 class Home extends Component {
 
@@ -16,6 +18,14 @@ class Home extends Component {
                     <IOSIcon name="ios-menu" size={30} color="#000" />
                 </TouchableOpacity>
             ),
+            headerRight: (
+                <TouchableOpacity onPress={() => {
+                    console.log(navigation);
+                    navigation.navigate('Details');
+                }}>
+                    <Text style={{ fontSize: 15, color: '#000' }}> ADD </Text>
+                </TouchableOpacity>
+            ),
             headerStyle: {
                 paddingRight: 10,
                 paddingLeft: 10
@@ -24,42 +34,36 @@ class Home extends Component {
     };
 
     componentDidMount() {
-        const a = () => {
-            return fetch('https://let-do-it.herokuapp.com/api/todos').then(res => {
-                return res.json();
-            }).then(resJSON => {
-                return resJSON;
-            }).catch(err => {
-                throw err;
-            });
-        }
-        a().then(data => {
-            this.props.fetchToDoSuccess(data.data);
+        this.props.startFetchTodo();
+        this._getTodoList();
+    }
+
+    _getTodoList() {
+        getTodos().then(result => {
+            this.props.fetchToDoSuccess(result.data);
         });
     }
 
     render() {
-        //this.props.startFetchTodo();
-        console.log(this.props);
         const { navigate } = this.props.navigation;
-        const { todos } = this.props;
+        const { todos, isLoading } = this.props;
         return (
         <View style={styles.container}>
-            <FlatList
+            <FlatList style={{ alignSelf: 'stretch' }}
                 data={todos}
                 renderItem={({item}) => (
-                    <View style={styles.container}>
-                        <Text>{item.name}</Text>
-                    </View>
+                    <ToDoItem data={item} />
                 )}
-                keyExtractor={(item) => item._id} />
+                keyExtractor={(item) => item._id}
+                refreshing={isLoading}
+                onRefresh={() => { this._getTodoList() }} />
         </View>
         );
     }
 }
 
 const mapStateToProps = (state) => {
-    return { todos: state.todos };
+    return { todos: state.todos, isLoading: state.isLoading };
 };
 
 export default connect(mapStateToProps, { startFetchTodo, fetchToDoSuccess, fetchToDoError })(Home);
