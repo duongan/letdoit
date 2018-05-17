@@ -2,18 +2,38 @@ import React, { Component } from 'react';
 import {  View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import * as actions from '../actions/actions';
+import * as api from '../api/index';
 
 class ToDoItem extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: {}
+        };
+    }
+
+    componentDidMount() {
+        this.setState({ data: this.props.data });
+    }
+
     _changeStatus(todo) {
+        const { startRequest, updateTodoSuccess } = this.props;
+        startRequest();
         if (todo) {
             todo.completed = !todo.completed;
-            this.props.updateTodoStatus(todo);
+            api.updateTodo(todo).then(response => {
+                updateTodoSuccess(todo);
+                this.setState({
+                    data: this.props.data
+                });
+            });
+            
         }
     }
 
     render() {
-        const { data } = this.props;
+        const { data } = this.state;
         return (
             <View style={styles.container}>
                 <View style={{ flex: 8 }}>

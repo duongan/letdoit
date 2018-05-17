@@ -1,8 +1,8 @@
 import * as actionTypes from './actionTypes';
 
-export function startFetchTodo() {
+export function startRequest() {
     return {
-        type: actionTypes.TODOS_REQUEST
+        type: actionTypes.START_REQUEST
     };
 }
 
@@ -19,9 +19,9 @@ export function fetchToDoError() {
     };
 }
 
-export function updateTodoStatus(todo) {
+export function updateTodoSuccess(todo) {
     return {
-        type: actionTypes.TODO_CREATE_UPDATE_REQUEST,
+        type: actionTypes.UPDATE_TODO_SUCCESS,
         todo
-    };
+    }
 }

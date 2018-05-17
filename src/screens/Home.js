@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IOSIcon from "react-native-vector-icons/Ionicons";
 
-import { startFetchTodo, fetchToDoSuccess, fetchToDoError } from '../actions/actions';
+import { startRequest, fetchToDoSuccess, fetchToDoError } from '../actions/actions';
 import { getTodos } from '../api/index';
 import ToDoItem from '../components/ToDoItem';
 
@@ -19,10 +19,7 @@ class Home extends Component {
                 </TouchableOpacity>
             ),
             headerRight: (
-                <TouchableOpacity onPress={() => {
-                    console.log(navigation);
-                    navigation.navigate('Details');
-                }}>
+                <TouchableOpacity onPress={() => navigation.navigate('Details')}>
                     <Text style={{ fontSize: 15, color: '#000' }}> ADD </Text>
                 </TouchableOpacity>
             ),
@@ -34,7 +31,7 @@ class Home extends Component {
     };
 
     componentDidMount() {
-        this.props.startFetchTodo();
+        this.props.startRequest();
         this._getTodoList();
     }
 
@@ -55,6 +52,7 @@ class Home extends Component {
                     <ToDoItem data={item} />
                 )}
                 keyExtractor={(item) => item._id}
+                extraData={this.state}
                 refreshing={isLoading}
                 onRefresh={() => { this._getTodoList() }} />
         </View>
@@ -66,7 +64,7 @@ const mapStateToProps = (state) => {
     return { todos: state.todos, isLoading: state.isLoading };
 };
 
-export default connect(mapStateToProps, { startFetchTodo, fetchToDoSuccess, fetchToDoError })(Home);
+export default connect(mapStateToProps, { startRequest, fetchToDoSuccess, fetchToDoError })(Home);
 
 const styles = StyleSheet.create({
     container: {
